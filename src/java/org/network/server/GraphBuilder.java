@@ -72,7 +72,7 @@ public class GraphBuilder {
 			FileOperations file = new FileOperations();
 //			List<Sentence> inputSentences = file.readDataFromFile("src/resources/monkey.txt");
 //			List<Sentence> inputSentences = file.readDataFromFile("src/resources/test2.txt");
-			List<Sentence> inputSentences = file.readDataFromFile("C:\\Users\\Kapmat\\Desktop\\artificial-neural-network\\src\\java\\resources\\" + data);
+			List<Sentence> inputSentences = file.readDataFromFile("C:\\Users\\Kapmat\\Desktop\\artificial-neural-network-datasets\\src\\java\\resources\\" + data);
 			createGraph(inputSentences, sessionHandler);
 		}
 

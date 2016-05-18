@@ -1,5 +1,5 @@
 //window.onload = init;
-var socket = new WebSocket("ws://localhost:8080/artificial-neural-network/actions");
+var socket = new WebSocket("ws://localhost:8080/artificial-neural-network-datasets/actions");
 socket.onmessage = onMessage;
 
 var nodeColor = "#FFFFFF";
