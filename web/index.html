@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		
+        <link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="app.css">
+		
+		
+    </head>
+    <body>
+
+        <div id="wrapper">
+            
+            <!--<p>Welcome to the Java WebSocket Home. Click the Add a device button to start adding devices.</p>-->
+			<hr>
+			<br>
+            <div>
+				<div class="title"> Artifical Neural Network </div>
+                <div class="button"> <a href="#" OnClick="startCreatingGraphMonkey()">Create graph - MONKEY</a></div>
+                <div class="button"> <a href="#" OnClick="startCreatingGraphTest()">Create graph - TEST</a></div>
+				<select id="speed">
+					<option value="10">10</option>
+					<option value="9">9</option>
+					<option value="8">8</option>
+					<option value="7">7</option>
+					<option value="6">6</option>
+					<option value="5">5</option>
+					<option value="4">4</option>
+					<option value="3">3</option>
+					<option value="2">2</option>
+					<option value="1">1</option>
+				</select>
+				<div class="button"> <a href="#" OnClick="updateGraph()">Activate neuron</a> </div>
+				<select id="selectedWord">
+					<option value="MONKEY">MONKEY</option>
+					<option value="I">I</option>
+					<option value="HAVE">HAVE</option>
+					<option value="A">A</option>
+					<option value="MY">MY</option>
+					<option value="IS">IS</option>
+					<option value="VERY">VERY</option>
+					<option value="SMALL">SMALL</option>
+					<option value="IT">IT</option>
+					<option value="LOVELY">LOVELY</option>
+					<option value="LIKES">LIKES</option>
+					<option value="TO">TO</option>
+					<option value="SIT">SIT</option>
+					<option value="ON">ON</option>
+					<option value="HEAD">HEAD</option>
+					<option value="QUICKLY">QUICKLY</option>
+					<option value="ALSO">ALSO</option>
+					<option value="CLEVER">CLEVER</option>
+					<option value="LEARNS">LEARNS</option>
+					<option value="LOVELY">LOVELY</option>
+				</select>
+				<div class="button"> <a href="#" OnClick="resetLines()">Reset lines</a> </div>
+				<div class="button"> <a href="#" OnClick="resetPage()">Reset page</a> </div>
+            </div>
+			<br>
+			<hr>
+			<div id="sentenceHTML" style="height: 36px">
+				</div>
+			<hr>
+            <div id="content"></div>
+			<div id="graph"></div>
+
+        </div>
+
+    </body>
+	
+	<script src="websocket.js"></script>
+	<!--<script src="test.js"></script>-->
+	<!--<script src="graphVisualization.js"></script>-->
+	
+</html>
