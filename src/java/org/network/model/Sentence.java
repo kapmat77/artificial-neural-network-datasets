@@ -26,18 +26,18 @@ public class Sentence {
 	}
 
 	public void addWord(String word) {
-		boolean exist = false;
+//		boolean exist = false;
 
-		for (String singleWord: words) {
-			if (singleWord.equals(word)) {
-				exist = true;
-				break;
-			}
-		}
-
-		if (!exist) {
+//		for (String singleWord: words) {
+//			if (singleWord.equals(word)) {
+//				exist = true;
+//				break;
+//			}
+//		}
+//
+//		if (!exist) {
 			this.words.add(word);
-		}
+//		}
 	}
 	
 	@Override

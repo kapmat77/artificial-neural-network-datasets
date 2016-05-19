@@ -13,17 +13,28 @@ import java.util.Map;
 public class Node {
 
 	private int id = 0;
-	private String name;
+	private String name = "";
+	private String attribute = "";
+
+
 	private int level = 0;
 	private List<Node> neighbours = new ArrayList<>();
 	private List<Node> someOfNeighbours = new ArrayList<>();
-	private List<Node> sentenceNeighbours = new ArrayList<>();
+//	private List<Node> sentenceNeighbours = new ArrayList<>();
 	private List<Node> bestNeighbours  = new ArrayList<>();
 	private Map<Node, Coefficients> neighCoefficient = new HashMap();
 	private Map<Node, Coefficients> neighActive = new HashMap();
 
 	public Map<Node, Coefficients> getNeighActive() {
 		return neighActive;
+	}
+	
+	public String getAttribute() {
+		return attribute;
+	}
+
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
 	}
 
 	public void setNeighActive(Map<Node, Coefficients> neighActive) {
@@ -127,14 +138,14 @@ public class Node {
 	
 	
 	
-	public String getSentenceNeighboursAsString() {
-		String str = "";
-		
-		for (Node node: sentenceNeighbours) {
-			str = str + " " + node.name;
-		}
-		return str;
-	}
+//	public String getSentenceNeighboursAsString() {
+//		String str = "";
+//		
+//		for (Node node: sentenceNeighbours) {
+//			str = str + " " + node.name;
+//		}
+//		return str;
+//	}
 
 	public void setNeighbours(List<Node> neighbours) {
 		this.neighbours = neighbours;
@@ -188,21 +199,21 @@ public class Node {
 		
 	}
 	
-	public void addSentenceNeighbour(Node neighbour) {
-		boolean exist = false;
-
-		for (Node node: sentenceNeighbours) {
-			if (node.getName().equals(neighbour.getName())) {
-//				node.increaseLevel();
-//				node.updateCoefficients(); // ???
-				exist = true;
-				break;
-			}
-		}
-		if (!exist) {
-			this.sentenceNeighbours.add(neighbour);
-		}
-	}
+//	public void addSentenceNeighbour(Node neighbour) {
+//		boolean exist = false;
+//
+//		for (Node node: sentenceNeighbours) {
+//			if (node.getName().equals(neighbour.getName())) {
+////				node.increaseLevel();
+////				node.updateCoefficients(); // ???
+//				exist = true;
+//				break;
+//			}
+//		}
+//		if (!exist) {
+//			this.sentenceNeighbours.add(neighbour);
+//		}
+//	}
 
 	private Coefficients getCoefficient() {
 		//TODO implement counting coefficient

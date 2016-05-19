@@ -21,17 +21,24 @@ import org.network.model.Sentence;
 public class FileOperations {
 
 	private List<Sentence> input = new ArrayList<>();
+	private List<String> attributeList = new ArrayList<>();
 
 	public List<Sentence> readDataFromFile(String file) {
 		Path path = Paths.get(file);
 		try {
 			Scanner in = new Scanner(path);
 			String line;
+			
 			String[] parts;
+			String[] attributeLine = in.nextLine().split("\\s+");
+			for(int i = 0; i<attributeLine.length; i++) {
+				attributeList.add(attributeLine[i].toUpperCase());
+			}
 			while (in.hasNextLine()) {
 				Sentence sentence = new Sentence();
 				line = in.nextLine();
-				parts = line.split(" ");
+				parts = line.split("\\s+");
+				
 				for (String word: parts) {
 					word = word.toUpperCase();
 					if (word.endsWith(".")) {
@@ -49,5 +56,9 @@ public class FileOperations {
 			System.exit(-1);
 		}
 		return input;
+	}
+	
+	public List<String> getAttributeList() {
+		return attributeList;
 	}
 }

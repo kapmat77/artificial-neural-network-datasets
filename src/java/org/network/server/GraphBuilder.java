@@ -11,6 +11,7 @@ package org.network.server;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,42 +22,18 @@ import org.network.model.Sentence;
 public class GraphBuilder {
 
 	private List<Node> neuralList = new ArrayList<>();
+	List<String> attributeList = new ArrayList<>();
+	Map<String, List<Node>> valueMap = new HashMap<>();
 	private String coeffString = ""; 
 	private int DELAY = 100;
 
 	public void buildGraph(String data, String activeWord, NodeSessionHandler sessionHandler,
 			String speed) throws InterruptedException {
-		switch(speed) {
-			case "1":
-				DELAY = 2500;
-				break;
-			case "2":
-				DELAY = 2000;
-				break;
-			case "3":
-				DELAY = 1500;
-				break;
-			case "4":
-				DELAY = 1000;
-				break;
-			case "5":
-				DELAY = 500;
-				break;
-			case "6":
-				DELAY = 300;
-				break;
-			case "7":
-				DELAY = 150;
-				break;
-			case "8":
-				DELAY = 100;
-				break;
-			case "9":
-				DELAY = 50;
-				break;
-			case "10":
-				DELAY = 10;
-				break;	
+		
+		setDelay(speed);
+		
+		if (data.equals("updateMode")) {
+			
 		}
 		
 		if (data.equals("update")) {
@@ -68,12 +45,13 @@ public class GraphBuilder {
 			Thread.sleep(100);
 			findNodes(activeNeuron, sessionHandler, true);
 		} else {
-			
+				
 			FileOperations file = new FileOperations();
-//			List<Sentence> inputSentences = file.readDataFromFile("src/resources/monkey.txt");
-//			List<Sentence> inputSentences = file.readDataFromFile("src/resources/test2.txt");
 			List<Sentence> inputSentences = file.readDataFromFile("C:\\Users\\Kapmat\\Desktop\\artificial-neural-network-datasets\\src\\java\\resources\\" + data);
+			attributeList = file.getAttributeList();
 			createGraph(inputSentences, sessionHandler);
+			
+
 		}
 
 	}
@@ -132,68 +110,97 @@ public class GraphBuilder {
 	}
 
 	private void createGraph(List<Sentence> inputSentences, NodeSessionHandler sessionHandler) throws InterruptedException {
-		for (Sentence sentence: inputSentences) {
+		
+//		for (Sentence sentence: inputSentences) {
+		for (int k=0; k<inputSentences.size(); k++) {
 			List<String> neighbours = new ArrayList<>();
-			for (String word: sentence.getWords()) {
+			for (String word: inputSentences.get(k).getWords()) {
 				neighbours.add(word);
 			}
-			int index = 0;
+			
 			//Json add new sentence
-			sendAddSentenceJson(sessionHandler, sentence.toString());
-			for (String word: sentence.getWords()) {
-				Node node = findNodeByName(word);
+			sendAddSentenceJson(sessionHandler, inputSentences.get(k).toString());
+			
+			Node mainNode = new Node();
+			mainNode.setName(String.valueOf(k+1));
+			//Json create mainNode
+			sendAddNodeJson(sessionHandler, mainNode);
+			
+			int index = 0;
+			
+			List<String> listOfWords = inputSentences.get(k).getWords();
+			for (int i=0; i<(listOfWords.size()); i++) {
+				Node node = findNodeByNameAndAttribute(listOfWords.get(i)+attributeList.get(i));
 				index++;
+				
+				System.out.println("KEY: " + valueMap.containsKey(attributeList.get(i)));
+				
+				if (!valueMap.containsKey(attributeList.get(i))) {
+					List<Node> valueList = new ArrayList<>();
+					valueList.add(node);
+					valueMap.put(attributeList.get(i),valueList);
+				} else {
+					valueMap.get(attributeList.get(i)).add(node);
+				}
+				
 				//Json update single sentence
-//				sendUpdateSentenceJson(sessionHandler, word);
+//				sendUpdateSentenceJson(sessionHandler, listOfWords.get(i));
 				if (node.getName().equals("null")) {
-					node.setName(word);
+					node.setName(listOfWords.get(i)+attributeList.get(i));
 					node.setLevel(1);
+					node.setAttribute(attributeList.get(i));
 					neuralList.add(node);
-					setConnections(node, index, neighbours);
+					setConnections(mainNode, node, index, neighbours);
 					//Json add new node
 					sendAddNodeJson(sessionHandler, node);
 					//Json update lines
-					sendAddLinesJson(sessionHandler, node);
+//					sendAddLinesJson(sessionHandler, node);
 				} else {
 					node.increaseLevel();
 					node.updateCoefficients();
-					setConnections(node, index, neighbours);
-					sendAddLinesJson(sessionHandler, node);
+					setConnections(mainNode, node, index, neighbours);
+//					sendAddLinesJson(sessionHandler, node);
 					//Json update graph
-					sendUpdateNodeJson(sessionHandler, node);
-					
+//					sendUpdateNodeJson(sessionHandler, node);	
 				}
-//				coeffString = "";
+				
 			}
+			sendAddLinesJson(sessionHandler, mainNode);
 		}
+		
+		//Connect attributes
+		for (String attrName: attributeList) {
+			List<Node> valueList = valueMap.get(attrName);
+//			valueList.s
+			
+		}
+		
 		sendAddSentenceJson(sessionHandler, "Etap uczenia sieci neuronowej zakończony powodzeniem- ilość węzłów: " 
 				+ neuralList.size());
-//		for (Node node: neuralList) {
-//			sendActiveNeuronJson(sessionHandler, node);
-//			Thread.sleep(700);
-//		}
 		
 	}
 	
-	private void setConnections(Node node, int firstIndex, List<String> neighbours) {
+	private void setConnections(Node mainNode, Node node, int firstIndex, List<String> neighbours) {
 		int secondIndex = 0;
-		for (String singleWord: neighbours) {
-			secondIndex++;
-			if (singleWord.equals(node.getName())) {
-				break;
-			} else {
-				Node secondNode = findNodeByName(singleWord);
-				secondNode.addNeighbour(node,false);
-				secondNode.addNeighCoefficient(node, countCoefficients(node, firstIndex, secondNode, secondIndex));
-//				secondNode.addNeighCoefficient(node, new Coefficients(0.0, 0.0));
-				coeffString = coeffString + secondNode.getCoeffAsString();
-
-				node.addNeighbour(secondNode,true);
-//				node.addNeighActive(secondNode, node.getNeighCoefficient().get(secondNode));
-				node.addNeighCoefficient(secondNode, node.getNeighCoefficient().get(secondNode));
-//				node.addNeighCoefficient(secondNode, countCoefficients(node, firstIndex, secondNode, secondIndex));
-			}
-		}
+		mainNode.addNeighbour(node, false);
+		node.addNeighbour(mainNode, false);
+//		for (String singleWord: neighbours) {
+//			secondIndex++;
+//			if (singleWord.equals(node.getName())) {
+//				break;
+//			} else {
+//				Node secondNode = findNodeByName(singleWord);
+//				secondNode.addNeighbour(node,false);
+//				secondNode.addNeighCoefficient(node, countCoefficients(node, firstIndex, secondNode, secondIndex));
+////				secondNode.addNeighCoefficient(node, new Coefficients(0.0, 0.0));
+//				coeffString = coeffString + secondNode.getCoeffAsString();
+//
+//				node.addNeighbour(secondNode,true);
+////				node.addNeighActive(secondNode, node.getNeighCoefficient().get(secondNode));
+//				node.addNeighCoefficient(secondNode, node.getNeighCoefficient().get(secondNode));
+////				node.addNeighCoefficient(secondNode, countCoefficients(node, firstIndex, secondNode, secondIndex));
+//			}
+//		}
 	}
 
 	private Coefficients countCoefficients(Node firstNode, int firstIndex, Node secondNode, int secondIndex) {
@@ -213,6 +220,15 @@ public class GraphBuilder {
 	 * @return 
 	 */
 	private Node findNodeByName(String word) {
+		for (Node singleNode: neuralList) {
+			if (singleNode.getName().equals(word)) {
+				return singleNode;
+			}
+		}
+		return new Node();
+	}
+	
+	private Node findNodeByNameAndAttribute(String word) {
 		for (Node singleNode: neuralList) {
 			if (singleNode.getName().equals(word)) {
 				return singleNode;
@@ -261,6 +277,41 @@ public class GraphBuilder {
 	private void sendUpdateBestLineJson(NodeSessionHandler sessionHandler, Node node) throws InterruptedException {
 		sessionHandler.updateBestLine(node);
 		Thread.sleep(DELAY);
+	}
+	
+	private void setDelay(String speed) {
+		switch(speed) {
+			case "1":
+				DELAY = 2500;
+				break;
+			case "2":
+				DELAY = 2000;
+				break;
+			case "3":
+				DELAY = 1500;
+				break;
+			case "4":
+				DELAY = 1000;
+				break;
+			case "5":
+				DELAY = 500;
+				break;
+			case "6":
+				DELAY = 300;
+				break;
+			case "7":
+				DELAY = 150;
+				break;
+			case "8":
+				DELAY = 100;
+				break;
+			case "9":
+				DELAY = 50;
+				break;
+			case "10":
+				DELAY = 10;
+				break;	
+		}
 	}
 
 

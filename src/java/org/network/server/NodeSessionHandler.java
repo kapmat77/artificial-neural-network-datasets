@@ -65,6 +65,7 @@ public class NodeSessionHandler {
 				.add("action", "updateLines")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.add("neighbours", node.getAnotherNeighboursAsString())
 //				.add("coeff", "0") //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -86,6 +87,7 @@ public class NodeSessionHandler {
 				.add("action", "updateBestLines")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.add("neighbours", node.getStringBestNeighbour())
 //				.add("coeff", "0") //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -99,6 +101,7 @@ public class NodeSessionHandler {
 				.add("action", "activeNeuron")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.build();
 		sendToAllConnectedSessions(sentenceAddMsg);
@@ -159,6 +162,7 @@ public class NodeSessionHandler {
 				.add("action", "add")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.add("neighbours", node.getNeighboursAsString())
 				.build();
@@ -171,6 +175,7 @@ public class NodeSessionHandler {
 				.add("action", "addLines")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.add("neighbours", node.getNeighboursAsString())
 				.add("coeff", node.getCoeffAsString())
@@ -187,6 +192,7 @@ public class NodeSessionHandler {
 				.add("action", "update")
 				.add("id", node.getId())
 				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.build();
 		sendToAllConnectedSessions(updateMessage);

@@ -2,11 +2,11 @@
 var socket = new WebSocket("ws://localhost:8080/artificial-neural-network-datasets/actions");
 socket.onmessage = onMessage;
 
-var nodeColor = "#FFFFFF";
+//var nodeColor = "#FFFFFF";
 var nodeBorderColor = "#000";
-var circleSize = 22;
-var wordSize = 10;
-var levelSize = 12;
+var circleSize = 4;
+var wordSize = 12;
+var levelSize = 8;
 var pathId = 1;
 
 //COEFF
@@ -49,6 +49,17 @@ var selected_node = null,
 
 var currentNode;
 
+force = d3.layout.force()
+        .nodes(nodes)
+        .links(links)
+        .size([width, height])
+        .linkDistance(200)
+		.linkStrength(0.0003)
+        .charge(-8)
+//        .charge(-200)
+		.gravity(0.0003)
+        .on('tick', tick);
+
 function refresh() {
 //	path = svg.append('svg:g').selectAll('path');
 //	circle = svg.append('svg:g').selectAll('g');
@@ -58,11 +69,10 @@ function refresh() {
         .links(links)
         .size([width, height])
         .linkDistance(200)
-		.linkStrength(0.0001)
-//		.theta(0)
+		.linkStrength(0.0003)
         .charge(-8)
-//        .charge(0)
-		.gravity(0.0002)
+//        .charge(-200)
+		.gravity(0.0003)
         .on('tick', tick);
 
     restart("add");
@@ -135,6 +145,15 @@ function updateGraph() {
     socket.send(JSON.stringify(UpdateAction));
 }
 
+function updateMode() {
+    var UpdateAction = {
+        action: "updateMode",
+		mode: document.getElementById("selectedMode").value,
+		speed: document.getElementById("speed").value
+    };
+    socket.send(JSON.stringify(UpdateAction));
+}
+
 function resetPage() {
     location.reload();
 }
@@ -148,7 +167,7 @@ function resetLines() {
 
 function printNodeElement(node) {
     nodes.push(
-        {id: node.id, name: node.name, level: node.level}
+        {id: node.id, name: node.name, level: node.level, attribute: node.attribute}
     );
 	
     restart("add");
@@ -301,8 +320,45 @@ function tick() {
         return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
     });
 
-	circle.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+	if (document.getElementById("selectedMode").value==="CHAOS") {
+		circle.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
         .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+	} else if (document.getElementById("selectedMode").value==="ORDER") {
+		circle.attr("cx", function(d) { 
+		if(d.attribute==="CLASS") {
+			return d.x = Math.max(3*width/7+5, Math.min(4*width/7, d.x)); 
+		} else if (d.attribute==="") {
+			return d.x = Math.max(radius, Math.min(width - radius, d.x));
+		} else if (d.attribute==="LL") {
+			return d.x = Math.max(radius, Math.min(3*width/7 - radius, d.x));
+		} else if (d.attribute==="LW") {
+			return d.x = Math.max(4*width/7 + radius, Math.min(width - radius, d.x));
+		} else if (d.attribute==="PL") {
+			return d.x = Math.max(radius, Math.min(width/2 - radius, d.x));
+		} else if (d.attribute==="PW") {
+			return d.x = Math.max(width/2 + radius, Math.min(width - radius, d.x));
+		}
+		})
+        .attr("cy", function(d) { 
+		if(d.attribute==="CLASS") {
+			return d.y = Math.max(radius, Math.min(radius, d.y));
+		} else if (d.attribute==="") {
+			return d.y = Math.max(height/2, Math.min(height/2, d.y));
+		} else if (d.attribute==="LL") {
+			return d.y = Math.max(radius, Math.min(radius, d.y));
+		} else if (d.attribute==="LW") {
+			return d.y = Math.max(radius, Math.min(radius, d.y));
+		} else if (d.attribute==="PL") {
+			return d.y = Math.max(height-radius, Math.min(height-radius, d.y));
+		} else if (d.attribute==="PW") {
+			return d.y = Math.max(height-radius, Math.min(height-radius, d.y));
+		}
+	});
+	}
+
+//	circle.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+//        .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+	
 
 //	coeff.attr("cx", function(d) { return d.x; })
 //		.attr("cy", function(d) { return d.y; });
@@ -362,8 +418,8 @@ function restart(action, idPath) {
     path.enter().append('svg:path')
         .attr('class', 'link')
 		.attr('id', 'path'+idPath)
-		.style('stroke', lineDefColor)
-		.style('stroke-width', 2)
+//		.style('stroke', lineDefColor)
+//		.style('stroke-width', 2)
         .classed('selected', function (d) {
             return d === selected_link;
         })
@@ -386,119 +442,95 @@ function restart(action, idPath) {
             selected_node = null;
         });
 	
-		//COEFF !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-		
-	
-//		var a = 0;
-//		a = 1 (function(d) {return d.coeff; }) + 1;
-//		if(function(d) { a = d.coeff; return d.coeff; } > 1) {
-//
-//		}
-
-//	if(ccc>0) {
-//		coeff = coeff.data(links);
-//		var c = coeff.enter().append('svg:g');
-//		
-//		var name = '';
-//		if (currentNode!==undefined) {
-//			name = currentNode.name;
-//		}
-//
-//		var mainPart = document.getElementById("nodeMain"+idPath);
-//		
-//		if(mainPart === null) {
-//
-//        c.append('svg:circle')
-//			.attr('id', "nodeMain" + idPath)
-//            .attr('class', 'node')
-//            .attr('r', coeffSize)
-//            .style('fill', coeffColor)
-//            .style('stroke', nodeBorderColor);
-//			
-//		
-//
-//        // print node name
-//        c.append('svg:text')
-//			.attr('id', "nodeWord" + idPath)
-//            .attr('x', 0)
-//            .attr('y', 2)
-//            .attr('class', 'id')
-//            .style('font-size', coeffWordSize)
-//            .text(ccc);
-//	
-//		} else {
-//		 // print node name
-//			c.append('svg:text')
-//			.attr('id', "nodeWord" + idPath)
-//            .attr('x', 0)
-//            .attr('y', 2)
-//            .attr('class', 'id')
-//            .style('font-size', coeffWordSize)
-//            .text(ccc);
-//		}
-//
-////  // remove old nodes
-//        coeff.exit().remove();
-//
-//        // set the graph in motion
-////        force.start();
-//	}
-		
 	}
     
-
-		
-
 	// circle (node) group
     // NB: the function arg is crucial here! nodes are known by id, not by index!
     circle = circle.data(nodes, function (d) {
         return d.id;
     });
 	
-
-
     // add new nodes
     if (action === "add") {
 		
         var g = circle.enter().append('svg:g');
 		
 		var name = '';
+		var attribute = '';
 		if (currentNode!==undefined) {
 			name = currentNode.name;
+			attribute = currentNode.attribute;
 		}
 		
-
-        g.append('svg:circle')
+		var nodeColor="#FFF";
+		switch(attribute) {
+			case "LL":
+				nodeColor="#FFBD4A";
+				break;
+			case "LW":
+				nodeColor="#77FF8A";
+				break;
+			case "PL":
+				nodeColor="#AFD8FC";
+				break;
+			case "PW":
+				nodeColor="#FFCCFF";
+				break;
+			case "CLASS":
+				nodeColor="#F9FF36";
+				break;	
+			case "":
+				nodeColor="#FF9999";
+				break;
+			defaulty:
+				nodeColor="#FFF";
+				break;
+		}
+		
+		if (currentNode.attribute==="") {
+			g.append('svg:circle')
 			.attr('id', "nodeMain" + name)
             .attr('class', 'node')
-            .attr('r', circleSize)
+            .attr('r', circleSize + 5)
             .style('fill', nodeColor)
             .style('stroke', nodeBorderColor);
+		} else {
+			g.append('svg:circle')
+			.attr('id', "nodeMain" + name)
+            .attr('class', 'node')
+            .attr('r', circleSize + 10)
+            .style('fill', nodeColor)
+            .style('stroke', nodeBorderColor);
+		}
+        
 
 		var mainPart = document.getElementById("nodeMain"+name);
 
         // print node name
         g.append('svg:text')
-			.attr('id', "nodeWord" + name)
+			.attr('id', "nodeWord" + name )
             .attr('x', 0)
-            .attr('y', 2)
+            .attr('y', 4)
             .attr('class', 'id')
             .style('font-size', wordSize)
             //      .text(nodes[0].name);
-            .text(function(d) { return d.name; });
+            .text(name.replace(attribute,""));
+//            .text(function(d) { return d.name; });
 
-        // print node level
+        // print node attribute
         g.append('svg:text')
-			.attr('id', "nodeLevel" + name)
+			.attr('id', "nodeAttribute" + attribute)
             .attr('x', 0)
-            .attr('y', 16)
+            .attr('y', 12)
             .attr('class', 'id')
             .style('font-size', levelSize)
             .style('fill', "black")
-                  .text(function(d) { return d.level; });
-//            .text(index);
-        index++;
+                  .text(function(d) { return d.attribute; });
+
+		
+		
+
+
 //  // remove old nodes
         circle.exit().remove();
 
@@ -519,69 +551,76 @@ function restart(action, idPath) {
 		
 		var wordPart = document.getElementById("nodeWord"+name);
 		
-		var levelPart = document.getElementById("nodeLevel"+name);
+		var levelPart = document.getElementById("nodeAttribute"+attribute);
 		
 		var multCS = 4;
 		var multWS = 2;
 		var paramY = levelPart.getAttribute("y");
 		
-		switch(currentNode.level) {
-			case 1:
-				mainPart.style.fill="#FFFFFF";
+		switch(currentNode.attribute) {
+			case "ll":
+				mainPart.style.fill="#FFBD4A";
 				break;
-			case 2:
-				mainPart.style.fill="#FFD2D2";
-				mainPart.setAttribute("r",circleSize+multCS*1);
-				wordPart.style.font = (wordSize+multWS*1)+"px arial";
-				levelPart.style.font = (levelSize+multWS*1)+"px arial";
-				for(var k = 0; k<multWS*1; k++) {
-					paramY++;
-				}
-				levelPart.setAttribute("y",paramY);
+			case "lw":
+				mainPart.style.fill="#73FF86";
+//				mainPart.setAttribute("r",circleSize+multCS*1);
+//				wordPart.style.font = (wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
 				break;
-			case 3:
-				mainPart.style.fill="#FFB3B3";
-				mainPart.setAttribute("r",circleSize+multCS*2);
-				wordPart.style.font = (wordSize+multWS*2)+"px arial";
-				levelPart.style.font = (levelSize+multWS*2)+"px arial";
-				for(var k = 0; k<multWS*1; k++) {
-					paramY++;
-				}
-				levelPart.setAttribute("y",paramY);
+			case "pl":
+				mainPart.style.fill="#AFD8FC";
+//				wordPart.style.font = (wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
 				break;
-			case 4:
-				mainPart.style.fill="#FF8D8D";
-				mainPart.setAttribute("r",circleSize+multCS*3);
-				wordPart.style.font = (wordSize+multWS*3)+"px arial";
-				levelPart.style.font = (levelSize+multWS*3)+"px arial";
-				for(var k = 0; k<multWS*1; k++) {
-					paramY++;
-				}
-				levelPart.setAttribute("y",paramY);
+			case "pw":
+				mainPart.style.fill="#FCAFD8";
+//				wordPart.style.font = (wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
 				break;
-			case 5:
-				mainPart.style.fill="#FF4646";
-				mainPart.setAttribute("r",circleSize+multCS*4);
-				wordPart.style.font = "bold " +(wordSize+multWS*4)+"px arial";
-				levelPart.style.font = (levelSize+multWS*4)+"px arial";
-				for(var k = 0; k<multWS*1; k++) {
-					paramY++;
-				}
-				levelPart.setAttribute("y",paramY);
+			case "a":
+				mainPart.style.fill="#F9FF36";
+//				wordPart.style.font = "bold " +(wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
 				break;
+			case "class":
+				mainPart.style.fill="#FFA4A4";
+//				mainPart.setAttribute("r",circleSize+multCS);
+//				wordPart.style.font = "bold " +(wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
+				break;	
 			defaulty:
-				mainPart.style.fill="#FF4646";
-				mainPart.setAttribute("r",circleSize+multCS*5);
-				wordPart.style.font = (wordSize+multWS*5)+"px bold arial";
-				levelPart.style.font = (levelSize+multWS*5)+"px arial";
-				for(var k = 0; k<multWS*1; k++) {
-					paramY++;
-				}
-				levelPart.setAttribute("y",paramY);
+				mainPart.style.fill="#FFFFFF";
+//				mainPart.setAttribute("r",circleSize+multCS);
+//				wordPart.style.font = (wordSize+multWS)+"px arial";
+//				levelPart.style.font = (levelSize+multWS)+"px arial";
+//				for(var k = 0; k<multWS*1; k++) {
+//					paramY++;
+//				}
+//				levelPart.setAttribute("y",paramY);
 				break;
 		}
 		
-		var textnode = document.getElementById("nodeLevel"+name);
+		var textnode = document.getElementById("nodeAttribute"+attribute);
 		textnode.textContent = currentNode.level;
 		
 		
@@ -596,40 +635,6 @@ function restart(action, idPath) {
 		if (currentNode!==undefined) {
 			name = currentNode.name;
 		}
-			
-//			var result = links.filter(function( obj ) {
-////				return obj.name === currentNode.name;
-//				return (obj.source.name === currentNode.name) || (obj.target.name === currentNode.name);
-//			});
-//			
-////			console.log(result);
-//			
-//			var re = result.filter(function( obj ) {
-////				return obj.name === currentNode.name;
-//				return (obj.source.name === currentNode.name);
-//			});
-//			
-////			console.log(re);
-//			
-//			var goodNodes = result.filter(function(item) {
-//				return re.indexOf(item) === -1;
-//			});
-//			
-////			console.log(goodNodes);
-//			
-//			var paths = [];
-//			for(var i=0; i<goodNodes.length; i++) {
-//				var rest = result.filter(function( obj ) {
-//					return (obj.target.name === goodNodes[i].source.name) && (obj.source.name === goodNodes[i].target.name);
-//				});
-//				for(var j=0; j<rest.length; j++) {
-//					paths.push(rest[j]);
-//				}	
-//			}
-//			
-//			for(var k=0; k<goodNodes.length; k++) {
-//				paths.push(goodNodes[k]);
-//			}	
 			
 			var neigh = currentNode.neighbours.split(" ");
 //			console.log(neigh);
@@ -651,19 +656,6 @@ function restart(action, idPath) {
 				})(i);
 			
 			}
-//			for(var i=0; i<paths.length; i++) {
-//				
-////				console.log(pathName);
-//				setTimeout(function(){ 
-//					var singlePath = document.getElementById("path" + paths[i].id);
-//					singlePath.style.stroke="#000";
-//					singlePath.style['stroke-width']="2px";
-//									}, 500);
-//								}
-//			result[0].style.stroke = "#000";
-//			result[1].style.stroke = "#FFF";
-//			result[2].style.stroke = "#ABC";
-			
 			
 			
 	} else if (action === "updateBestLine") {
@@ -671,40 +663,6 @@ function restart(action, idPath) {
 		if (currentNode!==undefined) {
 			name = currentNode.name;
 		}
-			
-//			var result = links.filter(function( obj ) {
-////				return obj.name === currentNode.name;
-//				return (obj.source.name === currentNode.name) || (obj.target.name === currentNode.name);
-//			});
-//			
-////			console.log(result);
-//			
-//			var re = result.filter(function( obj ) {
-////				return obj.name === currentNode.name;
-//				return (obj.source.name === currentNode.name);
-//			});
-//			
-////			console.log(re);
-//			
-//			var goodNodes = result.filter(function(item) {
-//				return re.indexOf(item) === -1;
-//			});
-//			
-////			console.log(goodNodes);
-//			
-//			var paths = [];
-//			for(var i=0; i<goodNodes.length; i++) {
-//				var rest = result.filter(function( obj ) {
-//					return (obj.target.name === goodNodes[i].source.name) && (obj.source.name === goodNodes[i].target.name);
-//				});
-//				for(var j=0; j<rest.length; j++) {
-//					paths.push(rest[j]);
-//				}	
-//			}
-//			
-//			for(var k=0; k<goodNodes.length; k++) {
-//				paths.push(goodNodes[k]);
-//			}	
 			
 			var neigh = currentNode.neighbours.split(" ");
 //			console.log(neigh);

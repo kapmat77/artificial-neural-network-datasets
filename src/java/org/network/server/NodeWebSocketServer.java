@@ -63,8 +63,11 @@ public class NodeWebSocketServer {
 					}
 					break;
 				case "update":
-					System.out.println("UP");
 					graphBuilder.buildGraph("update", jsonMessage.getString("word"), sessionHandler, jsonMessage.getString("speed"));
+					break;
+					
+				case "updateMode":
+					graphBuilder.buildGraph("updateMode", jsonMessage.getString("mode"), sessionHandler, jsonMessage.getString("speed"));
 					break;
 				case "remove":
 					break;
