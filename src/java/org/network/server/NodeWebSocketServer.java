@@ -17,17 +17,17 @@ import javax.websocket.server.ServerEndpoint;
 
 /**
  *
- * @author Kapmat
+ * @author Mateusz Kaproń
  */
 @ApplicationScoped
 @ServerEndpoint("/actions")
 public class NodeWebSocketServer {
-	
+
 	private GraphBuilder graphBuilder = new GraphBuilder();
-	
+
 	@Inject
 	private NodeSessionHandler sessionHandler;
-	
+
 	@OnOpen
 	public void open(Session session) {
 		System.out.println("Open Node session...");
@@ -48,61 +48,37 @@ public class NodeWebSocketServer {
 	@OnMessage
 	public void handleMessage(String message, Session session) throws InterruptedException {
 
-		System.out.println("JSON JS->Java: " + message);
-
 		try (JsonReader reader = Json.createReader(new StringReader(message))) {
 			JsonObject jsonMessage = reader.readObject();
 
-			
-			switch(jsonMessage.getString("action")) {
+			switch (jsonMessage.getString("action")) {
 				case "start":
 					if ("monkey".equals(jsonMessage.getString("name"))) {
-						graphBuilder.buildGraph("monkey.txt", "nullMonkey", sessionHandler, jsonMessage.getString("speed"));
+						graphBuilder.buildGraph("monkey.txt", jsonMessage.getString("neurons"), sessionHandler, jsonMessage.getString("speed"));
 					} else if ("test".equals(jsonMessage.getString("name"))) {
 						graphBuilder.buildGraph("test.txt", "nullTest", sessionHandler, jsonMessage.getString("speed"));
 					}
 					break;
-				case "update":
-					graphBuilder.buildGraph("update", jsonMessage.getString("word"), sessionHandler, jsonMessage.getString("speed"));
-					break;
 					
+				case "startFromLog": 
+					graphBuilder.buildGraph("buildGraphFromLog", jsonMessage.getString("objectParameters"), sessionHandler, jsonMessage.getString("speed"));
+					break;
+				case "update":
+					graphBuilder.buildGraph("update", jsonMessage.getString("neurons"), sessionHandler, jsonMessage.getString("speedActive"));
+					break;
+
 				case "updateMode":
 					graphBuilder.buildGraph("updateMode", jsonMessage.getString("mode"), sessionHandler, jsonMessage.getString("speed"));
 					break;
 				case "remove":
 					break;
 				case "resetLines":
-					sessionHandler.resetLines();
+					graphBuilder.buildGraph("resetGraph", "null", sessionHandler, "null");
+					break;
+				case "submitData":
+					graphBuilder.buildGraph("submitData", jsonMessage.getString("objectParameters"), sessionHandler, jsonMessage.getString("speed"));
+					break;
 			}
-			
-			
-//				for (int i = 0; i < 2; i++) {
-//					Device device = new Device();
-//					device.setName(i + "Monkey" + i);
-//					device.setLevel(i);
-//					Thread.sleep(1000);
-//					sessionHandler.addNode(device);
-//				}
-			
-
-//			if ("remove".equals(jsonMessage.getString("action"))) {
-//				int id = (int) jsonMessage.getInt("id");
-//				sessionHandler.removeNode(id);
-//			}
-
-//			if ("stop".equals(jsonMessage.getString("action"))) {
-////                int id = (int) jsonMessage.getInt("id");
-////                sessionHandler.removeDevice(id);
-//			}
-//
-//			if ("update".equals(jsonMessage.getString("action"))) {
-//				sessionHandler.toggleNode(1);
-//			}
-//			
-//			if ("toggle".equals(jsonMessage.getString("action"))) {
-////                int id = (int) jsonMessage.getInt("id");
-////                sessionHandler.toggleDevice("1Monkey1");
-//			}
 		}
 	}
 }

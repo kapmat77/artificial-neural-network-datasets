@@ -1,12 +1,6 @@
-E1 E2 E3
-E4 E5 E2 E6
-E4 E5 E2 E6
-E4 E5 E2 E6
-E4 E5 E2 E6
-E4 E5 E2 E6
-E7 E5 E2 E8
-E7 E9 E8
-E7 E9 E8
-E7 E9 E8
-E4 E2 E3
-E4 E2 E3
+Alcohol	Malic_acid	Ash	Alcalinity_of_ash  	Magnesium	Total_phenols	Flavanoids	Nonflavanoid_phenols	Proanthocyanins	Color_intensity	Hue	OD280/OD315	Proline 	Class
+14,23	1,71	2,43	15,60	127	2,80	3,06	0,28	2,29	5,64	1,04	3,92	1065	1
+13,24	2,59	2,87	21	118	2,80	2,69	0,39	1,82	4,32	1,04	2,93	735	1
+12,37	1,13	2,16	19	87	3,50	3,10	0,19	1,87	4,45	1,22	2,87	420	2
+12,21	1,19	1,75	16,80	151	1,85	1,28	0,14	2,50	2,85	1,28	3,07	718	2
+12,29	1,61	2,21	20,40	103	1,10	1,02	0,37	1,46	3,05	0,91	1,82	870	2

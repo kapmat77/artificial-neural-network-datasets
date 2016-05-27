@@ -1,10 +1,5 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
 /* 
-    Created on : 2016-05-11, 00:42:13
+    Created on : 2016-05-05, 00:42:13
     Author     : Kapmat
 */
 svg {
@@ -22,15 +17,13 @@ svg:not(.active):not(.ctrl) {
 }
 
 path.link {
-  /*fill: none;*/
-  stroke: #000;
-  /*stroke: #FFF700;*/
+  stroke: #FFF;
   stroke-width: 1px;
-  /*cursor: default;*/
 }
 
 path.link:hover {
 	stroke: yellow;
+	stroke-width: 4px;
 }
 
 path.nodeLink {
@@ -55,17 +48,13 @@ path.link.hidden {
 
 circle.node {
 	stroke-width: 1.5px;
-  cursor: pointer;
+	cursor: pointer;
 }
 
 circle.node:hover {
 	stroke-width: 3.5px;
 }
 
-/*circle.node.reflexive {
-  stroke: #000 !important;
-  stroke-width: 1px;
-}*/
 
 text {
   font: 12px sans-serif;

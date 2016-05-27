@@ -4,8 +4,8 @@ socket.onmessage = onMessage;
 
 //var nodeColor = "#FFFFFF";
 var nodeBorderColor = "#000";
-var circleSize = 4;
-var wordSize = 12;
+var circleSize = 7;
+var wordSize = 14;
 var levelSize = 8;
 var pathId = 1;
 
@@ -17,11 +17,12 @@ var coeffColor = "#50FF73";
 var lineDefColor = "#000";
 var lineActiveColor = "#FFF700";
 
-var radius = 40;
+var radius = 25;
 
 // set up SVG for D3
-var width = window.screen.availWidth-50,
-    height = window.screen.availHeight-274;
+var width = window.screen.availWidth-12,
+//    height = window.screen.availHeight-210;
+    height = window.screen.availHeight-275;
 var svg = d3.select('body')
     .append('svg')
     .attr('width', width)
@@ -53,7 +54,7 @@ force = d3.layout.force()
         .nodes(nodes)
         .links(links)
         .size([width, height])
-        .linkDistance(200)
+        .linkDistance(100)
 		.linkStrength(0.0003)
         .charge(-8)
 //        .charge(-200)
@@ -68,7 +69,7 @@ function refresh() {
         .nodes(nodes)
         .links(links)
         .size([width, height])
-        .linkDistance(200)
+        .linkDistance(100)
 		.linkStrength(0.0003)
         .charge(-8)
 //        .charge(-200)
@@ -110,6 +111,9 @@ function onMessage(event) {
 		case "activeNeuron":
 			printActiveNeuron(object);
 			break;
+		case "resetNodes":
+			restart("resetNodes");
+			break;
 		case "updateBestLines":
 			printUpdateBestLines(object);
 			break;
@@ -121,8 +125,23 @@ function onMessage(event) {
 function startCreatingGraphMonkey() {
     var StartAction = {
         action: "start",
-        name: "monkey",
-		speed: document.getElementById("speed").value
+		name: "monkey",
+        neurons: document.getElementById("neurons").value,
+		speed: document.getElementById("speed").value,
+		speedActive: document.getElementById("speedActive").value,
+		objectParameters: document.getElementById("objectParameters").value
+    };
+    socket.send(JSON.stringify(StartAction));
+}
+
+function startCreatingGraphFromLog() {
+	    var StartAction = {
+        action: "startFromLog",
+		name: "monkey",
+        neurons: document.getElementById("neurons").value,
+		speed: document.getElementById("speed").value,
+		speedActive: document.getElementById("speedActive").value,
+		objectParameters: document.getElementById("objectParameters").value
     };
     socket.send(JSON.stringify(StartAction));
 }
@@ -130,8 +149,10 @@ function startCreatingGraphMonkey() {
 function startCreatingGraphTest() {
     var StartAction = {
         action: "start",
-        name: "test",
-		speed: document.getElementById("speed").value
+		name: "test",
+        neurons: document.getElementById("neurons").value,
+		speed: document.getElementById("speed").value,
+		speedActive: document.getElementById("speedActive").value,
     };
     socket.send(JSON.stringify(StartAction));
 }
@@ -139,8 +160,10 @@ function startCreatingGraphTest() {
 function updateGraph() {
     var UpdateAction = {
         action: "update",
-		word: document.getElementById("selectedWord").value,
-		speed: document.getElementById("speed").value
+		word: document.getElementById("speed").value,
+		neurons: document.getElementById("neurons").value,
+		speed: document.getElementById("speed").value,
+		speedActive: document.getElementById("speedActive").value
     };
     socket.send(JSON.stringify(UpdateAction));
 }
@@ -158,11 +181,30 @@ function resetPage() {
     location.reload();
 }
 
+function submitData() {
+	var SubmitData = {
+		action: "submitData",
+		mode: document.getElementById("selectedMode").value,
+		speed: document.getElementById("speed").value,
+		objectParameters: document.getElementById("objectParameters").value
+	};
+	alert("Dane wprowadzone");
+	socket.send(JSON.stringify(SubmitData));
+}
+
 function resetLines() {
 	var ResetLinesAction = {
         action: "resetLines"
     };
     socket.send(JSON.stringify(ResetLinesAction));
+}
+
+function stopAndStart() {
+	alert("STOP");
+	var stopAndStart = {
+        action: "stopAndStart"
+    };
+    socket.send(JSON.stringify(stopAndStart));
 }
 
 function printNodeElement(node) {
@@ -185,9 +227,9 @@ function isInArray(source, target, array) {
 function printAddLines(node) {
 	var neigh = node.neighbours.split(" ");
 	var coeff = node.coeff.split(" ");
-	console.log(currentNode.name);
-	console.log(neigh);
-	console.log(coeff);
+//	console.log(currentNode.name);
+//	console.log(neigh);
+//	console.log(coeff);
 	
 	
 	for (i=1; i<neigh.length; i++) {
@@ -237,10 +279,10 @@ function printNewSentenceElement(sentence) {
     var sentenceName = document.createElement("span");
     sentenceName.setAttribute("class", "sentenceName");
     sentenceName.innerHTML = sentence.name;
-    sentenceName.style.fontSize = "25px";
+    sentenceName.style.fontSize = "12px";
     sentenceName.style.fontFamily = "Comic Sans MS";
-    sentenceName.style.color = "yellow";
-    sentenceName.className = "animationSentence";
+    sentenceName.style.color = currentNode.color;
+//    sentenceName.className = "animationSentence";
     sentenceDiv.appendChild(sentenceName);
 }
 
@@ -256,10 +298,11 @@ function printAddWordToSentence(word) {
 	
     var sentenceName = document.createElement("span");
     sentenceName.setAttribute("class", "sentenceName");
-    sentenceName.innerHTML = word.name + " / ";
-    sentenceName.style.fontSize = "25px";
+    sentenceName.innerHTML = word.name + " | ";
+    sentenceName.style.fontSize = "10px";
     sentenceName.style.fontFamily = "Comic Sans MS";
-    sentenceName.style.color = "yellow";
+    sentenceName.style.color = currentNode.color;
+//    sentenceName.style.color = "red";
     sentenceName.className = "animationSentence";
     sentenceDiv.appendChild(sentenceName);
 }
@@ -278,33 +321,14 @@ function printUpdatedNode(node) {
 function printActiveNeuron(node) {
 	
 	var mainPart = document.getElementById("nodeMain"+node.name);
-	mainPart.style.fill="#00FF33";
-	var oldColor = "#FFFFFF";
-	switch(node.level) {
-		case 1:
-			oldColor="#FFFFFF";
-			break;
-		case 2:
-			oldColor="#FFD2D2";
-			break;
-		case 3:
-			oldColor="#FFB3B3";
-			break;
-		case 4:
-			oldColor="#FF8D8D";
-			break;
-		case 5:
-			oldColor="#FF4646";
-			break;
-		defaulty:
-			oldColor="#FF4646";
-			break;
+	if (node.attribute==="CLASS" || node.attribute==="") {
+		mainPart.style.fill="yellow";
+	} else {
+		mainPart.style.fill="#00FF33";
 	}
-	setTimeout(function(){ mainPart.style.fill=oldColor; }, 3600);
 }
 
 function tick() {
-    // draw directed edges with proper padding from node centers
     path.attr('d', function (d) {
         var deltaX = d.target.x - d.source.x,
             deltaY = d.target.y - d.source.y,
@@ -418,7 +442,7 @@ function restart(action, idPath) {
     path.enter().append('svg:path')
         .attr('class', 'link')
 		.attr('id', 'path'+idPath)
-//		.style('stroke', lineDefColor)
+		.style('stroke', lineDefColor)
 //		.style('stroke-width', 2)
         .classed('selected', function (d) {
             return d === selected_link;
@@ -462,22 +486,24 @@ function restart(action, idPath) {
 			attribute = currentNode.attribute;
 		}
 		
+		var cSize = circleSize + 10;
 		var nodeColor="#FFF";
 		switch(attribute) {
 			case "LL":
 				nodeColor="#FFBD4A";
 				break;
 			case "LW":
-				nodeColor="#77FF8A";
+				nodeColor="#D0FFD6";
 				break;
 			case "PL":
-				nodeColor="#AFD8FC";
+				nodeColor="#73BEFF";
 				break;
 			case "PW":
 				nodeColor="#FFCCFF";
 				break;
 			case "CLASS":
-				nodeColor="#F9FF36";
+				nodeColor="#A0A0A0";
+				cSize = cSize+10;
 				break;	
 			case "":
 				nodeColor="#FF9999";
@@ -487,18 +513,20 @@ function restart(action, idPath) {
 				break;
 		}
 		
+		
+		
 		if (currentNode.attribute==="") {
 			g.append('svg:circle')
 			.attr('id', "nodeMain" + name)
             .attr('class', 'node')
-            .attr('r', circleSize + 5)
+            .attr('r', cSize)
             .style('fill', nodeColor)
             .style('stroke', nodeBorderColor);
 		} else {
 			g.append('svg:circle')
 			.attr('id', "nodeMain" + name)
             .attr('class', 'node')
-            .attr('r', circleSize + 10)
+            .attr('r', cSize)
             .style('fill', nodeColor)
             .style('stroke', nodeBorderColor);
 		}
@@ -642,18 +670,23 @@ function restart(action, idPath) {
 //				var singlePath = document.getElementById("path" + paths[i].id);
 //				console.log(neigh[i]);
 				var singlePath = document.getElementById("path" + neigh[i] + currentNode.name);
-//				var singlePath = document.getElementById("pathVERYCLEVER");
-				singlePath.style.stroke="yellow";
-				singlePath.style['stroke-width']="6px";
-				(function(capturedI) {
-					setTimeout(function(){ 
-						var sPath = document.getElementById("path" + neigh[capturedI] + currentNode.name);
-//						
-//						console.log(neigh[capturedI] + currentNode.name);
-						sPath.style.stroke="#000";
-						sPath.style['stroke-width']="2px";}, 1500);
+				singlePath.style.stroke=currentNode.color;
+//				singlePath.style.stroke="000";
+				if (currentNode.color==="red") {
+					singlePath.style['stroke-width']="2px";
+				} else {
+					singlePath.style['stroke-width']="1px";
+				}
 				
-				})(i);
+//				(function(capturedI) {
+//					setTimeout(function(){ 
+//						var sPath = document.getElementById("path" + neigh[capturedI] + currentNode.name);
+////						
+////						console.log(neigh[capturedI] + currentNode.name);
+//						sPath.style.stroke="#000";
+//						sPath.style['stroke-width']="2px";}, 1500);
+//				
+//				})(i);
 			
 			}
 			
@@ -686,19 +719,44 @@ function restart(action, idPath) {
 	} else if(action==="resetLines") {
 			var result = links.filter(function( obj ) {
 				return obj.name;
-//				return (obj.source.name === currentNode.name) || (obj.target.name === currentNode.name);
+
 			});
-//			alert(document.getElementById("selectedWord").value);
-//			console.log(neigh);
+
 			for(var i=0; i<result.length; i++) {
-//				var singlePath = document.getElementById("path" + paths[i].id);
-//				console.log(neigh[i]);
 				var singlePath = document.getElementById("path" + result[i].id);
-//				var singlePath = document.getElementById("pathVERYCLEVER");
-				console.log(result[i].id);
-				singlePath.style.stroke="000";
-				singlePath.style['stroke-width']="2px";
+				singlePath.style.stroke="#000";
+				singlePath.style['stroke-width']="1px";
 			}
+	} else if(action==="resetNodes") {
+		var singleNode = document.getElementById("nodeMain" + currentNode.name);
+		
+		var nodeColor="#FFF";
+		console.log(currentNode);
+		console.log(currentNode.attribute);
+		switch(currentNode.attribute) {
+			case "LL":
+				nodeColor="#FFBD4A";
+				break;
+			case "LW":
+				nodeColor="#D0FFD6";
+				break;
+			case "PL":
+				nodeColor="#73BEFF";
+				break;
+			case "PW":
+				nodeColor="#FFCCFF";
+				break;
+			case "CLASS":
+				nodeColor="#A0A0A0";
+				break;	
+			case "":
+				nodeColor="#FF9999";
+				break;
+			defaulty:
+				nodeColor="#FFF";
+				break;
+		}
+		singleNode.style.fill=nodeColor;
 	}
 }
 
@@ -727,10 +785,12 @@ function keyup() {
 
     // ctrl
     if (d3.event.keyCode === 17) {
-        circle
-            .on('mousedown.drag', null)
-            .on('touchstart.drag', null);
-        svg.classed('ctrl', false);
+//        circle
+//            .on('mousedown.drag', null)
+//            .on('touchstart.drag', null);
+//        svg.classed('ctrl', false);
+        circle.call(force.drag);
+        svg.classed('ctrl', true);
     }
 	
 	if (d3.event.keyCode === 82) {
@@ -739,7 +799,7 @@ function keyup() {
 }
 
 d3.select(window)
-    .on('keydown', keydown)
+//    .on('keydown', keydown)
   .on('keyup', keyup);
 //restart("add");
 //refresh();

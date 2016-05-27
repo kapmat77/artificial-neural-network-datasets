@@ -18,7 +18,7 @@ import org.network.model.Node;
 
 /**
  *
- * @author Kapmat
+ * @author Mateusz Kaproń
  */
 @ApplicationScoped
 public class NodeSessionHandler {
@@ -59,7 +59,7 @@ public class NodeSessionHandler {
 		addLinesJson(node, coeffString);
 	}
 	
-	public void updateLines(Node node) {
+	public void updateLines(Node node, String color) {
 		JsonProvider provider = JsonProvider.provider();
 		JsonObject updateNode = provider.createObjectBuilder()
 				.add("action", "updateLines")
@@ -67,8 +67,22 @@ public class NodeSessionHandler {
 				.add("level", node.getLevel())
 				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
+				.add("color", color)
 				.add("neighbours", node.getAnotherNeighboursAsString())
-//				.add("coeff", "0") //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				.build();
+		sendToAllConnectedSessions(updateNode);
+	}
+	
+	public void updateLines(Node node, String nameOfNode, String color) {
+		JsonProvider provider = JsonProvider.provider();
+		JsonObject updateNode = provider.createObjectBuilder()
+				.add("action", "updateLines")
+				.add("id", node.getId())
+				.add("level", node.getLevel())
+				.add("attribute", node.getAttribute())
+				.add("name", node.getName())
+				.add("color", color)
+				.add("neighbours", nameOfNode)
 				.build();
 		sendToAllConnectedSessions(updateNode);
 	}
@@ -81,6 +95,19 @@ public class NodeSessionHandler {
 		sendToAllConnectedSessions(updateNode);
 	}
 	
+	public void resetNodes(List<Node> allNodes) {
+		for (Node node: allNodes) {
+			node.setActive(false);
+			JsonProvider provider = JsonProvider.provider();
+			JsonObject resetNode = provider.createObjectBuilder()
+				.add("action", "resetNodes")
+				.add("name", node.getName())
+				.add("attribute", node.getAttribute())
+				.build();
+			sendToAllConnectedSessions(resetNode);
+		}
+	}
+	
 	public void updateBestLine(Node node) {
 		JsonProvider provider = JsonProvider.provider();
 		JsonObject updateNode = provider.createObjectBuilder()
@@ -90,7 +117,6 @@ public class NodeSessionHandler {
 				.add("attribute", node.getAttribute())
 				.add("name", node.getName())
 				.add("neighbours", node.getStringBestNeighbour())
-//				.add("coeff", "0") //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				.build();
 		sendToAllConnectedSessions(updateNode);
 	}
@@ -108,20 +134,16 @@ public class NodeSessionHandler {
 	}
 	
 	public void updateNode(Node node) {
-//		Node oldNode = getNodeByName(node.getName());
-//		System.out.println("Node level:" + node.getLevel() + " OldNode level:" + oldNode.getLevel());
-//		oldNode.setId(node.getId());
-//		oldNode.setLevel(node.getLevel());
 		updateNodeJson(node);
 	}
 	
-	public void updateSentence(String word) {
+	public void updateSentence(String word, String color) {
 		JsonProvider provider = JsonProvider.provider();
-//		sentenceId++;
 		JsonObject sentenceAddMsg = provider.createObjectBuilder()
 				.add("action", "updateSentence")
 				.add("id", sentenceId)
 				.add("name", word)
+				.add("color", color)
 				.build();
 		sendToAllConnectedSessions(sentenceAddMsg);
 	}
@@ -132,7 +154,6 @@ public class NodeSessionHandler {
 				.add("action", "removeSentence")
 				.add("id", sentenceId)
 				.build();
-//		sentenceId++;
 		sendToAllConnectedSessions(sentenceAddMsg);
 	}
 	
@@ -198,10 +219,6 @@ public class NodeSessionHandler {
 		sendToAllConnectedSessions(updateMessage);
 	}
 	
-	private void removeNodeJson(int id) {
-		
-	}
-	
 	private void sendToAllConnectedSessions(JsonObject message) {
 		for (Object session : sessions) {
 			sendToSession((Session)session, message);
@@ -210,7 +227,6 @@ public class NodeSessionHandler {
 	
 	private void sendToSession(Session session, JsonObject message) {
 		try {
-			System.out.println("JSON Java->JS: " + message.toString());
 			session.getBasicRemote().sendText(message.toString());
 		} catch (IOException ex) {
 			sessions.remove(session);

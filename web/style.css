@@ -1,8 +1,3 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
 /* 
     Created on : 2016-05-04, 19:27:36
     Author     : Kapmat
@@ -53,24 +48,6 @@ p {
     text-decoration: none;
 }
 
-#addDevice {
-    text-align: center;
-    width: 90%;
-    margin: auto;
-    margin-bottom: 10px;
-}
-
-#addDeviceForm {
-    text-align: left;
-    width: 400px;
-    margin: auto;
-    padding: 10px;
-}
-
-#addDeviceForm span {
-    display: block;
-}
-
 #content {
 	background-color:#fff;
     margin: auto;
@@ -115,71 +92,7 @@ p {
 	font-size: 50px;
 }
 
-.removeDevice {
-    margin-top: 12px;
-    text-align: center;
-}
-
-.node.Sleep {
-    background-color: #5eb85e;
-}
-
-.node.Charge {
-    background-color: #c2a00c;
-}
-
-.node.New {   
-    background-color: #0f90d1;
-}
-
-.device.Electronics a:hover {
-    color: #4badd1;
-}
-
-.device.Lights {
-    background-color: #c2a00c;
-}
-
-.device.Lights a:hover {
-    color: #fad232;
-}
-
-.device.Other {
-    background-color: #db524d;
-}
-
-.device.Other a:hover {
-    color: #ff907d;
-}
-
-.device a {
-    text-decoration: none;
-}
-
-.device a:visited, a:active, a:hover {
-    color: #fff;
-}
-
-.device a:hover {
-    text-decoration: underline;
-}
-
 .animationSentence {
-    color: yellow;
-    -webkit-animation-name: example; /* Chrome, Safari, Opera */
-    -webkit-animation-duration: 1s; /* Chrome, Safari, Opera */
     animation-name: example;
     animation-duration: 1s;
-}
-
-/* Chrome, Safari, Opera */
-@-webkit-keyframes example {
-    from {color: #1f1f1f;}
-    to {color: yellow;}
-}
-
-/* Standard syntax */
-@keyframes example {
-    from {color: #1f1f1f;}
-    to {color: yellow;}
 }

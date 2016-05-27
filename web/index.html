@@ -1,3 +1,9 @@
+<!-- 
+    Document   : index
+    Author     : Kapmat
+-->
+
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,17 +15,40 @@
         <link rel="stylesheet" type="text/css" href="style.css">
 		<link rel="stylesheet" type="text/css" href="app.css">
 		
-		
+		<script language="javascript" type="text/javascript">
+</script>
     </head>
     <body>
 
-        <div id="wrapper">
+		<div><script src="websocket.js"></script></div>
+		<div id="wrapper">
 			<hr>
 			<br>
             <div>
-				<div class="title"> Artifical Neural Network </div>
-                <div class="button"> <a href="#" OnClick="startCreatingGraphMonkey()">Create graph - MONKEY</a></div>
-                <div class="button"> <a href="#" OnClick="startCreatingGraphTest()">Create graph - TEST</a></div>
+				<div class="title"> ANN </div>
+				<div class="button"> <a href="#" OnClick="updateGraph()">Find class</a> </div>
+				<a>Speed(active):</a>
+				<select id="speedActive">
+					<option value="10">10</option>
+					<option value="9">9</option>
+					<option value="8">8</option>
+					<option value="7">7</option>
+					<option value="6">6</option>
+					<option value="5">5</option>
+					<option value="4">4</option>
+					<option value="3">3</option>
+					<option value="2">2</option>
+					<option value="1">1</option>
+				</select>
+                <div class="button"> <a href="#" OnClick="startCreatingGraphMonkey()">Create graph</a></div>
+                <div class="button"> <a href="#" OnClick="startCreatingGraphFromLog()">Update graph from log</a></div>
+				<a>Mode:</a>
+				<select id="selectedMode">
+					<option value="CHAOS">Chaos</option>
+					<option value="ORDER">Order (IRIS)</option>
+					
+				</select>
+				<a>Speed(graph):</a>
 				<select id="speed">
 					<option value="10">10</option>
 					<option value="9">9</option>
@@ -32,28 +61,25 @@
 					<option value="2">2</option>
 					<option value="1">1</option>
 				</select>
-				<div class="button"> <a href="#" OnClick="updateGraph()">Activate neuron</a> </div>
-				<select id="selectedMode">
-					<option value="ORDER">Order mode</option>
-					<option value="CHAOS">Chaos mode</option>
-				</select>	
-				<div class="button"> <a href="#" OnClick="resetLines()">Reset lines</a> </div>
+				
+				<a>Neurons:</a>
+				<input type="text" id="neurons" size="2" value="1">
+				
+				<div class="button"> <a href="#" OnClick="resetLines()">Reset graph</a> </div>
 				<div class="button"> <a href="#" OnClick="resetPage()">Reset page</a> </div>
             </div>
 			<br>
-			<hr>
-			<div id="sentenceHTML" style="height: 36px">
+			<div style="height: 40px">
+				<br>
+				<a>Object parameters:</a>
+						<input type="text" id="objectParameters" size="120" value="6,10	2,80	4,00	1,30">
+						
+				<div class="button" > <a href="#" OnClick="submitData()">Submit data</a> </div>
+			
 				</div>
 			<hr>
-            <div id="content"></div>
-			<div id="graph"></div>
-
-        </div>
-
+			<div id="sentenceHTML" style="overflow-y: scroll; height:70px;">
+				</div>
+        </div>	
     </body>
-	
-	<script src="websocket.js"></script>
-	<!--<script src="test.js"></script>-->
-	<!--<script src="graphVisualization.js"></script>-->
-	
 </html>
