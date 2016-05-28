@@ -3,10 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/web/index.html</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/model/Sentence.java</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/resources/logExample.txt</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/server/NodeSessionHandler.java</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/model/Coefficients.java</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/model/Node.java</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/resources/test.txt</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/server/GraphBuilder.java</file>
             <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/server/NodeWebSocketServer.java</file>
             <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/org/network/server/FileOperations.java</file>
-            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/web/websocket.js</file>
+            <file>file:/C:/Users/Kapmat/Desktop/artificial-neural-network-datasets/src/java/resources/test2.txt</file>
         </group>
     </open-files>
 </project-private>
